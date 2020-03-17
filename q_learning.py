@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import copy
 
-EPISODE = 50
+EPISODE = 80
 LEARNING_RATE = 0.01
 GAMMA = 0.9
 
+# environment
 env_matrix = np.array([[0, 0, 0, 0, 0],
                        [0, -1, 0, 0, -1],
                        [0, 0, 0, 0, 0],
@@ -15,9 +16,9 @@ env_matrix = np.array([[0, 0, 0, 0, 0],
                        ])
 
 
-# ENV action
-
 def update_state(state, direction):
+    # ENV action/step
+
     if direction == 0:
         state[0] -= 1
     elif direction == 1:
@@ -38,6 +39,8 @@ def update_state(state, direction):
 
 
 def env_restriction(q_table):
+    # ENV restriction - out of the bound - should be make more dynamic :(
+
     for x in range(5):
         for y in range(5):
             if y <= 0:
@@ -57,13 +60,17 @@ def env_restriction(q_table):
 
 
 def init_random_place_in_env():
+    # find and return allow state for mouse
+
     init_state_x = np.random.randint(5)
     allow_state_list = np.where(env_matrix[init_state_x] == 0)
     init_state_y = np.random.choice(allow_state_list[0], 1)
+    # return x and y
     return [init_state_x, init_state_y[0]]
 
-
 def show_env(list_all_state):
+    # render ENV with matplotlib
+
     fig, ax = plt.subplots()
     points = list_all_state[0]
 
@@ -79,40 +86,44 @@ def show_env(list_all_state):
 
 
 def main():
+    # main func
+
+    # shape of the env
     ROWS, COLUMN = env_matrix.shape
+    # create empty Q-table and add restriction
     q_table = np.zeros((ROWS * COLUMN, 4))
     q_table = env_restriction(q_table)
-
-    # print(q_table)
     # TRAIN and set Q table
-    max_step = 20
     for _ in range(EPISODE):
+        # random init state mouse
         state = init_random_place_in_env()
-        # print(q_table)
-        max_step = 20
+
+        # restriction for count random movements
+        max_step = 30
         while True:
+            max_step -= 1
+            # index in Q-table
             state_item_in_q = state[0] * 5 + state[1]
-            all_direction = np.where(q_table[state_item_in_q] >= 0)
+            # allow directions
+            all_direction = np.where(q_table[state_item_in_q] >= -1)
+            # random
             direction = np.random.choice(all_direction[0], 1)
-            #
-            # print(state)
-            # print(q_table[state_item_in_q])
-            # print(all_direction)
-            # print(direction)
+
+            # update state
             new_state, reward, done = update_state(state, direction[0])
+
+            # index in Q-table for new_state
             new_state_item_in_q = new_state[0] * 5 + new_state[1]
+            # Q-value
             q_table[state_item_in_q][direction[0]] += LEARNING_RATE * (
                     reward + GAMMA * max(q_table[new_state_item_in_q]))
             state = new_state
-
             if done == True:
                 break
             if max_step == 0:
                 break
 
-    # print(q_table)
-
-    # TEST
+    # TEST - similar as train process, however instead of random direction, select max value
     all_state = []
     for i in range(10):
         state = init_random_place_in_env()
