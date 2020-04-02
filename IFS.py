@@ -12,6 +12,7 @@ J_L = np.array([[0, 0, 0], [0, .8, 0], [0, .22, 0], [0, .8, 0]])
 
 P = np.array([.05, .25, .35, .35])
 
+
 # A_I = np.array([[0.05, 0.00, 0.00, 0.00, 0.60, 0.00, 0.00, 0.00, 0.05],
 #                 [0.45, -0.22, 0.22, 0.22, 0.45, 0.22, -0.22, 0.22, -0.45],
 #                 [-0.45, 0.22, -0.22, 0.22, 0.45, 0.22, 0.22, -0.22, 0.45],
@@ -29,14 +30,14 @@ def main():
     f2 = A_I[1].reshape(3, 3)
     f3 = A_I[2].reshape(3, 3)
     f4 = A_I[3].reshape(3, 3)
-    A = np.array(x[0])
-    B = np.array(x[1])
-    C = np.array(x[2])
+    a = np.array(x[0])
+    b = np.array(x[1])
+    c = np.array(x[2])
 
     for _ in range(10000):
-        A = np.append(A, x[0])
-        B = np.append(B, x[1])
-        C = np.append(C, x[2])
+        a = np.append(a, x[0])
+        b = np.append(b, x[1])
+        c = np.append(c, x[2])
         x.reshape(-1, 1)
 
         rand_num = np.random.random()
@@ -58,7 +59,7 @@ def main():
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
 
-    ax.scatter3D(A.flatten(), B.flatten(), C.flatten(), c='k', s=1)
+    ax.scatter3D(a.flatten(), b.flatten(), c.flatten(), c='k', s=1)
     plt.show()
 
 
